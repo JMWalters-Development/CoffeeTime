@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using CoffeeTime.ViewModels;
 using CoffeeTime.Views;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CoffeeTime;
 
@@ -15,12 +16,26 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        var collection = new ServiceCollection();
+        collection.AddCommonServices();
+        var services = collection.BuildServiceProvider();
+        var vm = services.GetRequiredService<MainWindowViewModel>();
+
+        switch (ApplicationLifetime)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(),
-            };
+            case IClassicDesktopStyleApplicationLifetime desktop:
+                desktop.MainWindow = new MainWindowView
+                {
+                    DataContext = vm
+                };
+                break;
+            
+            case ISingleViewApplicationLifetime singleViewPlatform:
+                singleViewPlatform.MainView = new MainWindowView
+                {
+                    DataContext = vm
+                };
+                break;
         }
 
         base.OnFrameworkInitializationCompleted();
