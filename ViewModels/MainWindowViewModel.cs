@@ -21,6 +21,6 @@ public class MainWindowViewModel : ViewModelBase
     {
         navigationService
             .CurrentVmChanged
-            .ToProperty(this, ns => ns.CurrentModuleVm, out _currentModuleVm);
+            .ToProperty(this, vm => vm.CurrentModuleVm, out _currentModuleVm);
     }
 }
