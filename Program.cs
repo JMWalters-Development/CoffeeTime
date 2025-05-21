@@ -38,10 +38,6 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var services = new ServiceCollection();
-        services.AddCommonServices();
-        ServiceProvider = services.BuildServiceProvider();
-        ConfigureCoreServices();
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
     

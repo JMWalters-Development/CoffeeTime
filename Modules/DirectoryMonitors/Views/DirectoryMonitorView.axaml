@@ -1,0 +1,118 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:CoffeeTime.Modules.DirectoryMonitors.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="CoffeeTime.Modules.DirectoryMonitors.Views.DirectoryMonitorView"
+             x:DataType="vm:DirectoryMonitorViewModel">
+    <Border
+        BorderBrush="{DynamicResource SystemAccentColor}"
+        BorderThickness="2"
+        CornerRadius="6"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top">
+        <StackPanel>
+            <!-- Path header -->
+            <TextBlock
+                Background="{DynamicResource SystemAccentColor}"
+                Padding="4"
+                Text="{Binding Path}"/>
+            
+            <!-- Most recent DirectoryMonitor log -->
+            <Border
+                BorderBrush="{DynamicResource SystemAccentColor}"
+                BorderThickness="0 0 0 2">
+                <TextBlock
+                    Padding="4"
+                    Text="{Binding MostRecentLog}"/>
+            </Border>
+            
+            <!-- DirectoryMonitor settings -->
+            <StackPanel Orientation="Horizontal">
+                <StackPanel.Styles>
+                    <Style Selector="Border">
+                        <Setter
+                            Property="BorderBrush"
+                            Value="{DynamicResource SystemAccentColor}"/>
+                        
+                        <Setter
+                            Property="BorderThickness"
+                            Value="0 0 2 0"/>
+                    </Style>
+                    
+                    <Style Selector="CheckBox">
+                        <Setter
+                            Property="Margin"
+                            Value="6 0"/>
+                    </Style>
+                    
+                    <Style Selector="ToggleSwitch">
+                        <Setter
+                            Property="Margin"
+                            Value="6"/>
+                    </Style>
+                </StackPanel.Styles>
+                
+                <!-- Core settings -->
+                <Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <CheckBox
+                            Content="Enabled"
+                            IsChecked="{Binding EnableRaisingEvents}"/>
+                        
+                        <CheckBox
+                            Content="Monitor Subdirectories"
+                            IsChecked="{Binding IncludeSubdirectories}"/>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Monitor event type settings -->
+                <Border>
+                    <StackPanel>
+                        <StackPanel.Styles>
+                            <Style Selector="TextBlock">
+                                <Setter
+                                    Property="HorizontalAlignment"
+                                    Value="Center"/>
+                            </Style>
+                        </StackPanel.Styles>
+                    
+                        <TextBlock Text="Monitor when directory or contents are:"/>
+                    
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleSwitch IsChecked="{Binding MonitoringChanged, Mode=TwoWay}">
+                                <TextBlock Text="Changed"/>
+                            </ToggleSwitch>
+                        
+                            <ToggleSwitch IsChecked="{Binding MonitoringCreated, Mode=TwoWay}">
+                                <TextBlock Text="Created"/>
+                            </ToggleSwitch>
+                        
+                            <ToggleSwitch IsChecked="{Binding MonitoringDeleted, Mode=TwoWay}">
+                                <TextBlock Text="Deleted"/>
+                            </ToggleSwitch>
+                        
+                            <ToggleSwitch IsChecked="{Binding MonitoringRenamed, Mode=TwoWay}">
+                                <TextBlock Text="Renamed"/>
+                            </ToggleSwitch>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Monitor filter setting -->
+                <StackPanel>
+                    <TextBlock
+                        Margin="24 0"
+                        Text="File name filter:"/>
+                    
+                    <TextBox
+                        HorizontalAlignment="Stretch"
+                        Margin="6 0 6 0"
+                        Text="{Binding Filter, Mode=TwoWay}"
+                        VerticalAlignment="Top"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

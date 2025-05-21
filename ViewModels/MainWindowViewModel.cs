@@ -1,6 +1,7 @@
 ﻿using System.Reactive;
 using Avalonia.Controls.ApplicationLifetimes;
 using CoffeeTime.Interfaces;
+using CoffeeTime.Modules.DirectoryMonitors.ViewModels;
 using ReactiveUI;
 
 namespace CoffeeTime.ViewModels;
@@ -26,6 +27,7 @@ public class MainWindowViewModel : ViewModelBase
         navigation
             .CurrentVmChanged
             .ToProperty(this, vm => vm.CurrentModuleVm, out _currentModuleVm);
+        navigation.NavigateTo(new DirectoryMonitorViewModel(@"C:\Users\joshu\Downloads"));
     }
     
     #region Private functions and methods

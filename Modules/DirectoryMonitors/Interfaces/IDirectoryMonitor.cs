@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using CoffeeTime.Modules.DirectoryMonitor.Records;
+using CoffeeTime.Modules.DirectoryMonitors.Records;
 
-namespace CoffeeTime.Modules.DirectoryMonitor.Interfaces;
+namespace CoffeeTime.Modules.DirectoryMonitors.Interfaces;
 
 public interface IDirectoryMonitor
 {
@@ -11,4 +11,5 @@ public interface IDirectoryMonitor
     string Filter { get; set; }
     bool IncludeSubdirectories { get; set; }
     NotifyFilters NotifyFilter { get; set; }
+    string Path { get; }
 }

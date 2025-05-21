@@ -1,4 +1,4 @@
-﻿namespace CoffeeTime.Modules.DirectoryMonitor.Enums;
+﻿namespace CoffeeTime.Modules.DirectoryMonitors.Enums;
 
 public enum DirectoryActivityType
 {

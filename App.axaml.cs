@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -9,6 +10,8 @@ namespace CoffeeTime;
 
 public partial class App : Application
 {
+    public static IServiceProvider ServiceProvider { get; private set; } = null!;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -16,7 +19,10 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        var vm = Program.ServiceProvider.GetRequiredService<MainWindowViewModel>();
+        var services = new ServiceCollection();
+        services.AddCommonServices();
+        ServiceProvider = services.BuildServiceProvider();
+        var vm = ServiceProvider.GetRequiredService<MainWindowViewModel>();
 
         switch (ApplicationLifetime)
         {

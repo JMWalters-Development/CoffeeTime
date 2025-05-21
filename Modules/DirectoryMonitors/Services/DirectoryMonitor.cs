@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Reactive.Linq;
-using CoffeeTime.Modules.DirectoryMonitor.Enums;
-using CoffeeTime.Modules.DirectoryMonitor.Interfaces;
-using CoffeeTime.Modules.DirectoryMonitor.Records;
+using CoffeeTime.Modules.DirectoryMonitors.Enums;
+using CoffeeTime.Modules.DirectoryMonitors.Interfaces;
+using CoffeeTime.Modules.DirectoryMonitors.Records;
 
-namespace CoffeeTime.Modules.DirectoryMonitor.Services;
+namespace CoffeeTime.Modules.DirectoryMonitors.Services;
 
 public class DirectoryMonitor : IDirectoryMonitor, IDisposable
 {
@@ -13,7 +13,6 @@ public class DirectoryMonitor : IDirectoryMonitor, IDisposable
 
     private bool _disposed;
     private readonly FileSystemWatcher _fileSystemWatcher;
-    private readonly IObservable<DirectoryActivity> _fileSystemChanges;
 
     #endregion
     
@@ -24,7 +23,7 @@ public class DirectoryMonitor : IDirectoryMonitor, IDisposable
         get => _fileSystemWatcher.EnableRaisingEvents;
         set => _fileSystemWatcher.EnableRaisingEvents = value;
     }
-    public IObservable<DirectoryActivity> FileSystemChanges => _fileSystemChanges;
+    public IObservable<DirectoryActivity> FileSystemChanges { get; }
     public string Filter
     {
         get => _fileSystemWatcher.Filter;
@@ -51,17 +50,26 @@ public class DirectoryMonitor : IDirectoryMonitor, IDisposable
         var changed = Observable.FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(
             h => _fileSystemWatcher.Changed += h,
             h => _fileSystemWatcher.Changed -= h
-        ).Select(e => new DirectoryActivity(DirectoryActivityType.Changed, e.EventArgs.FullPath));
+        ).Select(e => new DirectoryActivity(
+            DirectoryActivityType.Changed,
+            e.EventArgs.FullPath,
+            e.EventArgs.Name));
         
         var created = Observable.FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(
             h => _fileSystemWatcher.Created += h,
             h => _fileSystemWatcher.Created -= h
-        ).Select(e => new DirectoryActivity(DirectoryActivityType.Created, e.EventArgs.FullPath));
+        ).Select(e => new DirectoryActivity(
+            DirectoryActivityType.Created,
+            e.EventArgs.FullPath,
+            e.EventArgs.Name));
 
         var deleted = Observable.FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(
             h => _fileSystemWatcher.Deleted += h,
             h => _fileSystemWatcher.Deleted -= h
-        ).Select(e => new DirectoryActivity(DirectoryActivityType.Deleted, e.EventArgs.FullPath));
+        ).Select(e => new DirectoryActivity(
+            DirectoryActivityType.Deleted,
+            e.EventArgs.FullPath,
+            e.EventArgs.Name));
 
         var renamed = Observable.FromEventPattern<RenamedEventHandler, RenamedEventArgs>(
             h => _fileSystemWatcher.Renamed += h,
@@ -69,11 +77,15 @@ public class DirectoryMonitor : IDirectoryMonitor, IDisposable
         ).Select(e => new DirectoryActivity(
             DirectoryActivityType.Renamed,
             e.EventArgs.FullPath,
-            e.EventArgs.OldFullPath
+            e.EventArgs.Name,
+            e.EventArgs.OldFullPath,
+            e.EventArgs.OldName
         ));
         
-        _fileSystemChanges = Observable.Merge(changed, created, deleted, renamed);
+        FileSystemChanges = Observable.Merge(changed, created, deleted, renamed);
     }
+    
+    #region Public functions and methods
 
     public void Dispose()
     {
@@ -83,4 +95,6 @@ public class DirectoryMonitor : IDirectoryMonitor, IDisposable
         _fileSystemWatcher.Dispose();
         GC.SuppressFinalize(this);
     }
+    
+    #endregion
 }
