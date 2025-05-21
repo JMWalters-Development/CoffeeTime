@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace CoffeeTime.Services;
 
-public class NavigationService : INavigationService
+public class Navigation : INavigation
 {
     #region Private fields and properties
 

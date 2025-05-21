@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton<ISaveDataService, SaveDataService>();
         
         // Transients
-        collection.AddTransient<INavigationService, NavigationService>();
+        collection.AddTransient<INavigation, Navigation>();
         
         #endregion
         

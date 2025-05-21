@@ -20,10 +20,10 @@ public class MainWindowViewModel : ViewModelBase
     
     #endregion
 
-    public MainWindowViewModel(INavigationService navigationService)
+    public MainWindowViewModel(INavigation navigation)
     {
         ExitCommand = ReactiveCommand.Create(OnExit);
-        navigationService
+        navigation
             .CurrentVmChanged
             .ToProperty(this, vm => vm.CurrentModuleVm, out _currentModuleVm);
     }

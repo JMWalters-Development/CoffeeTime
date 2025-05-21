@@ -3,7 +3,7 @@ using ReactiveUI;
 
 namespace CoffeeTime.Interfaces;
 
-public interface INavigationService
+public interface INavigation
 {
     public ReactiveObject? CurrentVm { get; }
     public IObservable<ReactiveObject?> CurrentVmChanged { get; }
