@@ -7,7 +7,30 @@ namespace CoffeeTime;
 
 sealed class Program
 {
-    public static IServiceProvider ServiceProvider { get; private set; }
+    #region Public fields and properties
+    
+    public static IServiceProvider ServiceProvider { get; private set; } = null!;
+    
+    #endregion
+    
+    #region Private functions and methods
+
+    private static void ConfigureCoreServices()
+    {
+        
+    }
+    
+    #endregion
+    
+    #region Public functions and methods
+    
+    // Avalonia configuration, don't remove; also used by visual designer.
+    public static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .WithInterFont()
+            .LogToTrace()
+            .UseReactiveUI();
     
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -18,14 +41,9 @@ sealed class Program
         var services = new ServiceCollection();
         services.AddCommonServices();
         ServiceProvider = services.BuildServiceProvider();
+        ConfigureCoreServices();
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
-
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .WithInterFont()
-            .LogToTrace()
-            .UseReactiveUI();
+    
+    #endregion
 }
