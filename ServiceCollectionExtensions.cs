@@ -1,4 +1,6 @@
 ﻿using CoffeeTime.Interfaces;
+using CoffeeTime.Modules.DirectoryMonitor.Interfaces;
+using CoffeeTime.Modules.DirectoryMonitor.Services;
 using CoffeeTime.Services;
 using CoffeeTime.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +17,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton<ISaveDataService, SaveDataService>();
         
         // Transients
+        collection.AddTransient<IDirectoryMonitor, DirectoryMonitor>();
         collection.AddTransient<INavigation, Navigation>();
         
         #endregion
