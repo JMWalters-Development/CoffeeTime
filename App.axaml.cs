@@ -16,10 +16,7 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        var collection = new ServiceCollection();
-        collection.AddCommonServices();
-        var services = collection.BuildServiceProvider();
-        var vm = services.GetRequiredService<MainWindowViewModel>();
+        var vm = Program.ServiceProvider.GetRequiredService<MainWindowViewModel>();
 
         switch (ApplicationLifetime)
         {
