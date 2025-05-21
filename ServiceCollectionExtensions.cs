@@ -11,6 +11,10 @@ public static class ServiceCollectionExtensions
     {
         #region Services
 
+        // Singletons
+        collection.AddSingleton<ISaveDataService, SaveDataService>();
+        
+        // Transients
         collection.AddTransient<INavigationService, NavigationService>();
         
         #endregion
