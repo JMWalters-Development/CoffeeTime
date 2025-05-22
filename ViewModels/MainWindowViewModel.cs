@@ -27,10 +27,10 @@ public class MainWindowViewModel : ViewModelBase
         navigation
             .CurrentVmChanged
             .ToProperty(this, vm => vm.CurrentModuleVm, out _currentModuleVm);
-        var temporaryDmVm = saveData.LoadJson<DirectoryMonitorViewModel>("test.json") ??
-                 new DirectoryMonitorViewModel(@"C:\Users");
+        var temporaryDmVm = saveData.LoadJson<DirectoryMonitorViewModel>("temporaryDmVm.json") ??
+                            new DirectoryMonitorViewModel(@"C:\Users");
         
-        temporaryDmVm.SettingsChanged += (sender, args) => saveData.SaveJson(temporaryDmVm, "test.json");
+        temporaryDmVm.SettingsChanged += (sender, args) => saveData.SaveJson(temporaryDmVm, "temporaryDmVm.json");
         navigation.NavigateTo(temporaryDmVm);
     }
     
