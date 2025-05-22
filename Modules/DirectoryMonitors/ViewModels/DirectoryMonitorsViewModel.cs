@@ -1,17 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using CoffeeTime.Modules.DirectoryMonitors.Interfaces;
 using CoffeeTime.ViewModels;
 
 namespace CoffeeTime.Modules.DirectoryMonitors.ViewModels;
 
-public class DirectoryMonitorsViewModel : ViewModelBase
+public class DirectoryMonitorsViewModel(IDirectoryMonitorManager directoryMonitorManager) : ViewModelBase
 {
-    private readonly IDirectoryMonitorManager _directoryMonitorManager;
-    
-    public ObservableCollection<DirectoryMonitorViewModel> DirectoryMonitorVms => _directoryMonitorManager.DirectoryMonitorVms;
-    
-    public DirectoryMonitorsViewModel(IDirectoryMonitorManager directoryMonitorManager)
-    {
-        _directoryMonitorManager = directoryMonitorManager;
-    }
+    public IReadOnlyCollection<DirectoryMonitorViewModel> DirectoryMonitorVms =>
+        new ReadOnlyObservableCollection<DirectoryMonitorViewModel>(directoryMonitorManager.DirectoryMonitorVms);
 }
