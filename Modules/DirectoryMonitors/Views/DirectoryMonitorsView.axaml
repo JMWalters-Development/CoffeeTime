@@ -6,5 +6,17 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="CoffeeTime.Modules.DirectoryMonitors.Views.DirectoryMonitorsView"
              x:DataType="vm:DirectoryMonitorsViewModel">
-    Welcome to Avalonia!
+    <ItemsControl ItemsSource="{Binding DirectoryMonitorVms}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <ContentControl Content="{Binding}"/>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
 </UserControl>

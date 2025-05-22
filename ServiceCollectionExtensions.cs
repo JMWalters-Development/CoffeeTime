@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
 
         // Singletons
         collection.AddSingleton<ISaveDataService, SaveDataService>();
+        collection.AddSingleton<IDirectoryMonitorManager, DirectoryMonitorManager>();
         
         // Transients
         collection.AddTransient<INavigation, Navigation>();

@@ -1,6 +1,7 @@
 ﻿using System.Reactive;
 using Avalonia.Controls.ApplicationLifetimes;
 using CoffeeTime.Interfaces;
+using CoffeeTime.Modules.DirectoryMonitors.Interfaces;
 using CoffeeTime.Modules.DirectoryMonitors.ViewModels;
 using ReactiveUI;
 
@@ -21,17 +22,16 @@ public class MainWindowViewModel : ViewModelBase
     
     #endregion
 
-    public MainWindowViewModel(INavigation navigation, ISaveDataService saveData)
+    public MainWindowViewModel(
+        DirectoryMonitorsViewModel directoryMonitors,
+        INavigation navigation,
+        ISaveDataService saveData)
     {
         ExitCommand = ReactiveCommand.Create(OnExit);
         navigation
             .CurrentVmChanged
             .ToProperty(this, vm => vm.CurrentModuleVm, out _currentModuleVm);
-        var temporaryDmVm = saveData.LoadJson<DirectoryMonitorViewModel>("temporaryDmVm.json") ??
-                            new DirectoryMonitorViewModel(@"C:\Users");
-        
-        temporaryDmVm.SettingsChanged += (sender, args) => saveData.SaveJson(temporaryDmVm, "temporaryDmVm.json");
-        navigation.NavigateTo(temporaryDmVm);
+        navigation.NavigateTo(directoryMonitors);
     }
     
     #region Private functions and methods

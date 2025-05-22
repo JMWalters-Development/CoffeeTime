@@ -201,7 +201,7 @@ public class DirectoryMonitorViewModel : ViewModelBase, IDisposable
             subscription?.Dispose();
         }
         _subscriptions.Clear();
-        _directoryMonitor?.Dispose();
+        _directoryMonitor.Dispose();
         GC.SuppressFinalize(this);
     }
 
