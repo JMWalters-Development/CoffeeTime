@@ -21,13 +21,17 @@ public class MainWindowViewModel : ViewModelBase
     
     #endregion
 
-    public MainWindowViewModel(INavigation navigation)
+    public MainWindowViewModel(INavigation navigation, ISaveDataService saveData)
     {
         ExitCommand = ReactiveCommand.Create(OnExit);
         navigation
             .CurrentVmChanged
             .ToProperty(this, vm => vm.CurrentModuleVm, out _currentModuleVm);
-        navigation.NavigateTo(new DirectoryMonitorViewModel(@"C:\Users\joshu\Downloads"));
+        var temporaryDmVm = saveData.LoadJson<DirectoryMonitorViewModel>("test.json") ??
+                 new DirectoryMonitorViewModel(@"C:\Users");
+        
+        temporaryDmVm.SettingsChanged += (sender, args) => saveData.SaveJson(temporaryDmVm, "test.json");
+        navigation.NavigateTo(temporaryDmVm);
     }
     
     #region Private functions and methods

@@ -10,7 +10,7 @@ using ReactiveUI;
 
 namespace CoffeeTime.Modules.DirectoryMonitors.ViewModels;
 
-public class DirectoryMonitorViewModel : ViewModelBase
+public class DirectoryMonitorViewModel : ViewModelBase, IDisposable
 {
     #region Private fields and properties
     
@@ -27,6 +27,7 @@ public class DirectoryMonitorViewModel : ViewModelBase
 
     #region Public fields and properties
 
+    public event EventHandler? SettingsChanged;
     public bool EnableRaisingEvents
     {
         get => _directoryMonitor.EnableRaisingEvents;
@@ -34,6 +35,7 @@ public class DirectoryMonitorViewModel : ViewModelBase
         {
             _directoryMonitor.EnableRaisingEvents = value;
             this.RaisePropertyChanged();
+            NotifySettingsChanged();
         }
     }
     public string Filter
@@ -43,6 +45,7 @@ public class DirectoryMonitorViewModel : ViewModelBase
         {
             this.RaiseAndSetIfChanged(ref _filter, value);
             _directoryMonitor.Filter = value;
+            NotifySettingsChanged();
         }
     }
     public bool IncludeSubdirectories
@@ -50,15 +53,11 @@ public class DirectoryMonitorViewModel : ViewModelBase
         get => _directoryMonitor.IncludeSubdirectories;
         set
         {
-            var wasRunning = _directoryMonitor.EnableRaisingEvents;
+            if (_directoryMonitor.IncludeSubdirectories == value) return;
             
-            if (wasRunning) _directoryMonitor.EnableRaisingEvents = false;
-
             _directoryMonitor.IncludeSubdirectories = value;
-
-            if (wasRunning) _directoryMonitor.EnableRaisingEvents = true;
-
             this.RaisePropertyChanged();
+            NotifySettingsChanged();
         }
     }
     public bool MonitoringChanged
@@ -69,6 +68,7 @@ public class DirectoryMonitorViewModel : ViewModelBase
             _monitoringChanged = value;
             UpdateSubscription(DirectoryActivityType.Changed, value, OnChanged);
             this.RaisePropertyChanged();
+            NotifySettingsChanged();
         }
     }
     public bool MonitoringCreated
@@ -79,6 +79,7 @@ public class DirectoryMonitorViewModel : ViewModelBase
             _monitoringCreated = value;
             UpdateSubscription(DirectoryActivityType.Created, value, OnCreated);
             this.RaisePropertyChanged();
+            NotifySettingsChanged();
         }
     }
     public bool MonitoringDeleted
@@ -89,6 +90,7 @@ public class DirectoryMonitorViewModel : ViewModelBase
             _monitoringDeleted = value;
             UpdateSubscription(DirectoryActivityType.Deleted, value, OnDeleted);
             this.RaisePropertyChanged();
+            NotifySettingsChanged();
         }
     }
     public bool MonitoringRenamed
@@ -99,6 +101,7 @@ public class DirectoryMonitorViewModel : ViewModelBase
             _monitoringRenamed = value;
             UpdateSubscription(DirectoryActivityType.Renamed, value, OnRenamed);
             this.RaisePropertyChanged();
+            NotifySettingsChanged();
         }
     }
     public string MostRecentLog
@@ -132,6 +135,29 @@ public class DirectoryMonitorViewModel : ViewModelBase
 
     #region Private functions and methods
     
+    private IDisposable CreateSubscription(
+        DirectoryActivityType activityType,
+        Action<DirectoryActivity> onActivity)
+    {
+        return _directoryMonitor.FileSystemChanges
+            .Where(activity => activity.ActivityType == activityType)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(onActivity);
+    }
+    
+    private void DisposeSubscription(DirectoryActivityType activityType)
+    {
+        if (!_subscriptions.TryGetValue(activityType, out var subscription)) return;
+        
+        subscription?.Dispose();
+        _subscriptions.Remove(activityType);
+    }
+
+    private void NotifySettingsChanged()
+    {
+        SettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
     private void OnChanged(DirectoryActivity activity)
     {
         MostRecentLog = $"{activity.Name} Changed";
@@ -157,26 +183,27 @@ public class DirectoryMonitorViewModel : ViewModelBase
         bool shouldSubscribe,
         Action<DirectoryActivity> onActivity)
     {
-        // Dispose of the current subscription if there is one
-        if (_subscriptions.TryGetValue(activityType, out var subscription))
-        {
-            subscription?.Dispose();
+        DisposeSubscription(activityType);
 
-            // Unsubscribe
-            if (!shouldSubscribe)
-            {
-                _subscriptions.Remove(activityType);
-                
-                return;
-            }
-        }
-
-        // Subscribe
-        _subscriptions[activityType] = _directoryMonitor.FileSystemChanges
-            .Where(activity => activity.ActivityType == activityType)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(onActivity);
+        if (!shouldSubscribe) return;
+        
+        _subscriptions[activityType] = CreateSubscription(activityType, onActivity);
     }
     
+    #endregion
+    
+    #region Public functions and methods
+    
+    public void Dispose()
+    {
+        foreach (var subscription in _subscriptions.Values)
+        {
+            subscription?.Dispose();
+        }
+        _subscriptions.Clear();
+        _directoryMonitor?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
     #endregion
 }

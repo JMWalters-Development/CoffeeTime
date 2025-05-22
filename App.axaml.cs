@@ -10,7 +10,7 @@ namespace CoffeeTime;
 
 public partial class App : Application
 {
-    public static IServiceProvider ServiceProvider { get; private set; } = null!;
+    private static IServiceProvider ServiceProvider { get; set; } = null!;
 
     public override void Initialize()
     {
